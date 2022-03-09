@@ -1,0 +1,1 @@
+!function(){"use strict";!function(){for(var n=arguments.length,o=new Array(n),e=0;e<n;e++)o[e]=arguments[e];console.log(o)}("Hello ")}();

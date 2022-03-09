@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Module & Bundle splitting</title>
+  <style>
+    html {
+      --color-background-code-sample: #eee;
+      --color-foreground-code-sample: #a55;
+
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      font-size: 100%;
+      line-height: 1.125;
+    }
+
+    body {
+      margin: 2rem;
+      color: #555;
+    }
+
+    a {
+      color: #55a;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+      color: #333;
+      font-weight: 600;
+    }
+
+    pre,
+    :not(pre) > code  {
+      color: var(--color-foreground-code-sample);
+      background-color: var(--color-background-code-sample);
+      border-radius: 0.25rem;
+    }
+
+    pre {
+      padding: 1rem;
+    }
+
+    :not(pre) > code {
+      padding: 0.125rem 0.25rem;
+    }
+  </style>
+
+  <main>
+    <header>
+      <h1>ES Modules and <code>[type="module"]</code> scripts</h1>
+    </header>
+
+    <article>
+      <h2>Using ES Modules in the browser</h2>
+      <p>
+        This webpage uses the new-ish <code>type="module"</code> and <code>nomodule</code>
+        attributes on the <code>&lt;script&gt;</code> elements at the bottom of the document.
+      </p>
+    </article>
+
+    <article>
+      <h2>What's going on here?</h2>
+
+      <p>
+        The JavaScript this page uses has been written using ES2015+ features…
+      </p>
+
+      <figure>
+        <figcaption>index.js:</figcaption>
+<pre><code>import Say from './say.js';
+
+Say('Hello', 'World');</code></pre>
+        
+      </figure>
+
+      <figure>
+        <figcaption>say.js:</figcaption>
+<pre><code>export default function Say(...array) {
+  array.forEach(item => {
+    console.log(item);
+  });
+}</code></pre>
+      </figure>
+
+      <p>
+        Those features, along with the ES6 Modules they're contained in can be called and used
+        natively within evergreen or standards compliant browsers! (<a href="https://caniuse.com/es6-module">Support for this is great!</a>)
+      </p>
+
+      <h3>Finding that hard to believe?</h3>
+
+      <p>Don't take my word for it. Open your Browser's DevTools and reload this page.</p>
+      <ol>
+        <li>
+          In the Console, all browsers should see two <code>console.log()</code> outputs:
+<pre><code>Hello
+World</code></pre>
+        </li>
+      </ol>
+
+      <p>If you're using a ES6+ standards-compliant browser…</p>
+      <ol start="2">
+        <li>
+          In the Network graph, you should see two network requests for JavaScript files:
+<pre><code>index.js   script   249B
+say.js     script   294B</code></pre>
+        </li>
+      </ol>
+
+      <p>If you're using a non-compliant browser…</p>
+      <ol start="2">
+        <li>
+          In the Network graph, you should see only one network request for a JavaScript bundle:
+<pre><code>index<b>.bundle</b>.js   script   337B</code></pre>
+        </li>
+      </ol>
+    </article>
+
+    <article>
+      <h2>Why go to all this trouble?</h2>
+
+      <h3>Why don't you just use a bundler?</h3>
+      <p>
+        With the advent of HTTP2, the costs of making individual requests for scripts has diminished.
+        So, there's less of a need for a chunked or bundled script.
+      </p>
+      <p>
+        On top of that, if you go down the bundle route, you're investing heavily in:
+      </p>
+      <ul>
+        <li>code dependencies</li>
+        <li>security-induced maintenance</li>
+        <li>knowledge requirements that are more difficult for junior developers to surmount</li>
+      </ul>
+      <p>
+        A good rule to follow is to <em>build for the platform</em>.
+        If the Web supports the features you're shipping, then deal with the exclusions rather than the whole.
+      </p>
+
+      <h3>What about Coffee… I mean… TypeScript?</h3>
+      <p>
+        That's your decision to make, whether you use TypeScript or plain-old ES6.<br>
+        This approach doesn't work with TypeScript, until TypeScript is natively supported in the Browser, 
+        or you transpile each individual script.
+      </p>
+
+      <h3>Why create the extra bundle?</h3>
+      <p>
+        As older browsers start to phase out of existence, you should reach a point where
+        you won't need to create a polyfilled bundle of your `src` work.
+      </p>
+      <p>
+        Until then, you're going to need something that can serve ES5 polyfilled script to the browsers that don't support ES6+ features.
+      </p>
+      <p>
+        On top of that, you'll need to provide a single JavaScript file for those browsers that don't support ES6 Modules.
+      </p>
+    </article>
+
+    <article>
+      <h2>To do</h2>
+
+      <ul>
+        <li>Research caching strategies</li>
+        <li>How do two modules calling the same child module behave?</li>
+      </ul>
+    </article>
+  </main>
+  
+  <script type="module" src="js/index.js"></script>
+  <script nomodule src="js/index.bundle.js"></script>
